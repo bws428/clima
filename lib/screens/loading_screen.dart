@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:clima/services/location.dart';
 import 'package:http/http.dart' as http;
-import 'package:clima/utilities/constants.dart';
+import 'dart:convert';
+import 'package:clima/utilities/keys.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -24,21 +25,34 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
     // Create new Location object
     Location location = Location();
+    double lat = location.lat;
+    double lon = location.long;
 
     // Wait for location data
     await location.getCurrentLocation();
 
-    // Print to console
-    print(location.lat ?? 'Latitude not available.');
-    print(location.long ?? 'Longitude not available.');
+    print('Lat: $lat, Lon: $lon');
+
   }
 
   void getData() async {
     http.Response response = await http.get(
-        'https://samples.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=439d4b804bc8187953eb36d2a8c26a02');
+      'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$apiKey');
     if(response.statusCode == 200) {
       String data = response.body;
-      print(data);
+
+      var decodedData = jsonDecode(data);
+      
+      // Temp, condition number, city name
+      String cityName = decodedData['name'];
+      String country = decodedData['sys']['country'];
+      double tempK = decodedData['main']['temp'];
+      double tempC = tempK-273.15;
+      int condition = decodedData['weather'][0]['id'];
+
+      print('City: $cityName, $country');
+      print('Temperature: ${tempC.toStringAsFixed(0)} C');
+      print('Condition code: $condition');
     }
     else {
       print(response.statusCode);
