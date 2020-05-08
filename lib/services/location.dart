@@ -3,8 +3,8 @@ import 'package:geolocator/geolocator.dart';
 // Create a Location class for lat/long
 class Location {
   // Properties
-  double latitude;
-  double longitude;
+  double lat;
+  double long;
 
   // Constructor
   Location();
@@ -15,8 +15,8 @@ class Location {
       Position position = await Geolocator()
           .getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
 
-      latitude = position.latitude;
-      longitude = position.longitude;
+      lat = position.latitude;
+      long = position.longitude;
     } catch (e) {
       print(e);
     }
